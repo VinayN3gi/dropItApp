@@ -1,13 +1,11 @@
-import { ScreenContent } from 'components/ScreenContent';
-import { StatusBar } from 'expo-status-bar';
-
+import { ScrollView,Text,View } from 'react-native';
 import './global.css';
+
 
 export default function App() {
   return (
-    <>
-      <ScreenContent title="Home" path="App.tsx"></ScreenContent>
-      <StatusBar style="auto" />
-    </>
+    <View className='flex h-full  justify-center items-center'>
+      <Text className='text-error'>Hello</Text>
+    </View>
   );
 }

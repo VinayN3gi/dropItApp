@@ -12,7 +12,33 @@
       "tsconfigPaths": true
     },
 
-    "plugins": [],
+    "plugins": [
+      "expo-router",
+      [
+        "expo-font",{
+          "fonts":[
+            "./assets/Poppins/Poppins-Black.ttf",
+            "./assets/Poppins/Poppins-BlackItalic.ttf",
+            "./assets/Poppins/Poppins-Bold.ttf",
+            "./assets/Poppins/Poppins-BoldItalic.ttf",
+            "./assets/Poppins/Poppins-ExtraBold.ttf",
+            "./assets/Poppins/Poppins-ExtraBoldItalic.ttf",
+            "./assets/Poppins/Poppins-ExtraLight.ttf",
+            "./assets/Poppins/Poppins-ExtraLightItalic.ttf",
+            "./assets/Poppins/Poppins-Italic.ttf",
+            "./assets/Poppins/Poppins-Light.ttf",
+            "./assets/Poppins/Poppins-LightItalic.ttf",
+            "./assets/Poppins/Poppins-Medium.ttf",
+            "./assets/Poppins/Poppins-MediumItalic.ttf",
+            "./assets/Poppins/Poppins-Regular.ttf",
+            "./assets/Poppins/Poppins-SemiBold.ttf",
+            "./assets/Poppins/Poppins-SemiBoldItalic.ttf",
+            "./assets/Poppins/Poppins-Thin.ttf",
+            "./assets/Poppins/Poppins-ThinItalic.ttf"
+          ]
+        }
+      ]
+    ],
 
     "orientation": "portrait",
     "icon": "./assets/icon.png",
