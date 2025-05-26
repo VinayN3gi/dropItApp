@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export const content = ['./App.{js,ts,tsx}', './components/**/*.{js,ts,tsx}'];
+export const content = ['./App.{js,ts,tsx}', './components/**/*.{js,ts,tsx}','./screens/**/*.{js,ts,tsx}'];
 export const presets = [require('nativewind/preset')];
 export const theme = {
   extend: {

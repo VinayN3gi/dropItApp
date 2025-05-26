@@ -3,6 +3,11 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import './global.css';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './screens/HomeScreen';
+
+
 
 SplashScreen.preventAutoHideAsync();
 
@@ -41,11 +46,15 @@ export default function App() {
     return null;
   }
 
+  const Stack = createNativeStackNavigator();
+
 
 
   return (
-    <View className='flex h-full  justify-center items-center'>
-      <Text className='text-error font-poppins-regular'>Hello</Text>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName='Home'>
+         <Stack.Screen name="Home" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
