@@ -66,7 +66,16 @@ export const theme = {
       }
     },
     fontFamily: {
-      poppins: ["var(--font-poppins)"]
+       poppins: ['Poppins-Regular', 'sans-serif'],
+        'poppins-thin': ['Poppins-Thin', 'sans-serif'],
+        'poppins-extralight': ['Poppins-Extralight', 'sans-serif'],
+        'poppins-light': ['Poppins-Light', 'sans-serif'],
+        'poppins-regular': ['Poppins-Regular', 'sans-serif'],
+        'poppins-medium': ['Poppins-Medium', 'sans-serif'],
+        'poppins-semibold': ['Poppins-Semibold', 'sans-serif'],
+        'poppins-bold': ['Poppins-Bold', 'sans-serif'],
+        'poppins-extrabold': ['Poppins-Extrabold', 'sans-serif'],
+        'poppins-black': ['Poppins-Black', 'sans-serif'],
     },
     boxShadow: {
       'drop-1': '0px 10px 30px 0px rgba(66, 71, 97, 0.1)',
