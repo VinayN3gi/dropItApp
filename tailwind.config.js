@@ -5,8 +5,8 @@ export const theme = {
   extend: {
     colors: {
       brand: {
-        '100': '#EA6365',
-        DEFAULT: '#FA7275'
+       '100': '#4CAF50',  // a lighter shade of green
+  				DEFAULT: '#43A047'
       },
       red: '#FF7474',
       error: '#b80000',
