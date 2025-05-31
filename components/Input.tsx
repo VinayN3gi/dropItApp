@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 
 interface InputProps extends TextInputProps {
   label?: string;
-  error?: string;
+  error?: string | undefined;
   className?: string;
 }
 
@@ -19,6 +19,10 @@ export function Input({ label, error, className, ...props }: InputProps) {
           className
         )}
       />
+      {error && (
+        <Text className="text-error mb-1 font-poppins-regular ml-2 mt-1">{error}</Text>
+      )}
+
     </View>
   );
 }
