@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, FlatList } from 'react-native';
+import { View, Text, SafeAreaView, FlatList, TouchableOpacity, Pressable, Modal } from 'react-native';
 import { useAuth } from 'context/AuthContext';
 import { getFiles } from 'appwrite/fileAction';
 import { Models } from 'appwrite';
 import { Loader } from 'components/Loader';
 import Thumbnail from 'components/Thumbnail';
+
 
 
 type Document = {
@@ -33,6 +34,27 @@ const FileScreen = () => {
   const [loading,setLoading]=useState(true)
   const [searchText,setSearchText]=useState<string>(' ');
   const [sortText,setSortText]=useState<string | undefined>(undefined)
+  const [showSortMenu, setShowSortMenu] = useState(false);
+
+  const sortOptions = [
+  {
+    label: "Created Date (newest)",
+    value: "$createdAt-desc",
+  },
+  {
+    label: "Created Date (oldest)",
+    value: "$createdAt-asc",
+  },
+  {
+    label: "Name (A-Z)",
+    value: "name-asc",
+  },
+  {
+    label: "Name (Z-A)",
+    value: "name-desc",
+  },
+  ];
+
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -79,14 +101,62 @@ const FileScreen = () => {
   }
 
   return (
-    <SafeAreaView className='flex h-full mt-14 mx-6'>
-         <Text className='text-center font-poppins-bold text-3xl mb-20 text-light-100 '>Files</Text>
-         <FlatList
-         data={files}
-         renderItem={({ item }) => <Thumbnail file={item} />}
-         keyExtractor={(item) => item.$id!}
-         />
+    <SafeAreaView className="flex h-full mt-14 mx-6">
+      {/* Title and Sort Info */}
+      <Text className="text-center font-poppins-bold text-3xl text-light-100">Files</Text>
+
+      <View className="flex-row justify-end mt-4 mb-6">
+        <TouchableOpacity onPress={() => setShowSortMenu(true)}>
+         <Text className="text-base font-poppins-medium">
+          <Text className="text-black">Sort by: </Text>
+          <Text className="text-light-200">
+            {sortOptions.find((o) => o.value === sortText)?.label || 'None'}
+          </Text>
+        </Text>
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        data={files}
+        renderItem={({ item }) => <Thumbnail file={item} />}
+        keyExtractor={(item) => item.$id!}
+      />
+
+      <Modal
+        visible={showSortMenu}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSortMenu(false)}
+      >
+        <Pressable
+          className="flex-1 justify-end bg-black/30"
+          onPress={() => setShowSortMenu(false)}
+        >
+          <View className="bg-white px-6 py-4 rounded-t-2xl">
+            <Text className="font-poppins-bold text-lg mb-2 text-black">Sort by</Text>
+            {sortOptions.map((option) => (
+              <TouchableOpacity
+                key={option.value}
+                className="py-2"
+                onPress={() => {
+                  setSortText(option.value);
+                  setShowSortMenu(false);
+                }}
+              >
+                <Text
+                  className={`font-poppins-medium text-base ${
+                    sortText === option.value ? 'text-brand' : 'text-light-200'
+                  }`}
+                >
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
+   
   )
 };
 

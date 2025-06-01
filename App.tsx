@@ -11,6 +11,7 @@ import SignUpScreen from 'screens/SignUpScreen';
 import { AuthProvider } from 'context/AuthContext';
 import { FileProvider } from 'context/FileContext';
 import TabNavigator from 'screens/TabNavigator';
+import { PaperProvider } from 'react-native-paper';
 
 
 
@@ -54,7 +55,7 @@ export default function App() {
   const Stack = createNativeStackNavigator();
 
   return (
-    <AuthProvider>
+      <AuthProvider>
       <FileProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
