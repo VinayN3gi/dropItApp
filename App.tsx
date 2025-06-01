@@ -9,6 +9,9 @@ import HomeScreen from './screens/HomeScreen';
 import SignInScreen from 'screens/SignInScreen';
 import SignUpScreen from 'screens/SignUpScreen';
 import { AuthProvider } from 'context/AuthContext';
+import { FileProvider } from 'context/FileContext';
+import TabNavigator from 'screens/TabNavigator';
+
 
 
 
@@ -17,8 +20,7 @@ SplashScreen.preventAutoHideAsync();
 
 
 export default function App() {
-
-  const [loaded,error]=useFonts({
+  const [loaded, error] = useFonts({
     'Poppins-Thin': require('./assets/Poppins/Poppins-Thin.ttf'),
     'Poppins-ThinItalic': require('./assets/Poppins/Poppins-ThinItalic.ttf'),
     'Poppins-ExtraLight': require('./assets/Poppins/Poppins-ExtraLight.ttf'),
@@ -37,9 +39,9 @@ export default function App() {
     'Poppins-ExtraBoldItalic': require('./assets/Poppins/Poppins-ExtraBoldItalic.ttf'),
     'Poppins-Black': require('./assets/Poppins/Poppins-Black.ttf'),
     'Poppins-BlackItalic': require('./assets/Poppins/Poppins-BlackItalic.ttf'),
-  })
+  });
 
-   useEffect(() => {
+  useEffect(() => {
     if (loaded || error) {
       SplashScreen.hideAsync();
     }
@@ -51,19 +53,17 @@ export default function App() {
 
   const Stack = createNativeStackNavigator();
 
-
-
   return (
     <AuthProvider>
-      <NavigationContainer>
-      <Stack.Navigator initialRouteName='SignIn'
-      screenOptions={{ headerShown: false }}>
-         <Stack.Screen name="Home" component={HomeScreen} />
-         <Stack.Screen name="SignIn" component={SignInScreen} />
-         <Stack.Screen name="SignUp" component={SignUpScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+      <FileProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
+             <Stack.Screen name="Tabs" component={TabNavigator} />
+            <Stack.Screen name="SignIn" component={SignInScreen} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </FileProvider>
     </AuthProvider>
-    
   );
 }

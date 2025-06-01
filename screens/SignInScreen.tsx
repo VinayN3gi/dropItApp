@@ -20,7 +20,7 @@ const SignInScreen = () => {
 
    useEffect(() => {
     if (authUser) {
-      navigation.replace('Home'); 
+      navigation.replace('Tabs'); 
     }
   }, [authUser]);
 
