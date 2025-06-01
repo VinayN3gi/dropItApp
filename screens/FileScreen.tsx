@@ -61,17 +61,20 @@ const FileScreen = () => {
   if(loading)
   {
     return (
-          <View className="flex-1 justify-center items-center bg-white">
-          <Loader size="large" color="green" />
-          <View className="mt-4 items-center">
-            <Text className="font-poppins-bold text-brand-100 text-center mb-2">
-              Fetching files...
-            </Text>
-            <Text className="font-poppins-medium text-brand-100 text-center">
-              Please wait
-            </Text>
-          </View>
+       <SafeAreaView className="flex-1 mt-14 mx-6">
+      <Text className="text-center font-poppins-bold text-3xl text-light-100">Files</Text>
+      <View className="flex-1 justify-center items-center bg-white">
+        <Loader size="large" color="green" />
+        <View className="mt-4 items-center">
+          <Text className="font-poppins-bold text-brand-100 text-center mb-2">
+            Fetching files...
+          </Text>
+          <Text className="font-poppins-medium text-brand-100 text-center">
+            Please wait
+          </Text>
         </View>
+      </View>
+    </SafeAreaView>
     );
   }
 
