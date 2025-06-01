@@ -39,6 +39,7 @@ const SignUpScreen = () => {
               if(user.success)
               {
                 console.log(user.user)
+                navigation.replace("Tabs")
               }
               else throw new Error(user.error)
           } catch (error:any) {
