@@ -22,15 +22,15 @@ const TabNavigator=()=>{
           let iconName: React.ComponentProps<typeof Ionicons>['name'] = 'home';
 
           if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
+            iconName = focused ? 'home' : 'home-outline'
           } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
+            iconName = focused ? 'person' : 'person-outline'
           }
           else if (route.name === 'Files') {
-            iconName = focused ? 'folder' : 'folder-outline';
+            iconName = focused ? 'folder' : 'folder-outline'
           }
 
-          return <Ionicons name={iconName} size={22} color={color} />;
+          return <Ionicons name={iconName} size={22} color={color} />
         },
       })}
     >

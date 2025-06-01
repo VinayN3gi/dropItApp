@@ -3,10 +3,10 @@ import React from 'react'
 import { getFileIcon } from 'lib/utils';
 
 const IconComponent = ({extension,type}:{extension:string | undefined,type:string}) => {
-   const Icon = getFileIcon(extension, type);
+  const Icon = getFileIcon(extension, type)
   return (
-    <View>
-      <Icon width={40} height={40} />;
+    <View className='flex justify-center items-center'>
+      <Icon width={40} height={40} />
     </View>
   )
 }
