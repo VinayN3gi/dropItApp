@@ -30,7 +30,7 @@ type Document = {
 const FileScreen = () => {
   const { authUser }: { authUser: Models.User<any> } = useAuth();
   const [files, setFiles] = useState<Document[]>([])
-  const [loading,setLoading]=useState(false)
+  const [loading,setLoading]=useState(true)
   const [searchText,setSearchText]=useState<string>(' ');
   const [sortText,setSortText]=useState<string | undefined>(undefined)
 
@@ -61,8 +61,8 @@ const FileScreen = () => {
   if(loading)
   {
     return (
-       <SafeAreaView className="flex-1 mt-14 mx-6">
-      <Text className="text-center font-poppins-bold text-3xl text-light-100">Files</Text>
+       <SafeAreaView className="flex-1  bg-white">
+      <Text className="text-center font-poppins-bold mt-14 text-3xl text-light-100">Files</Text>
       <View className="flex-1 justify-center items-center bg-white">
         <Loader size="large" color="green" />
         <View className="mt-4 items-center">
@@ -75,7 +75,7 @@ const FileScreen = () => {
         </View>
       </View>
     </SafeAreaView>
-    );
+    )
   }
 
   return (
@@ -87,7 +87,7 @@ const FileScreen = () => {
          keyExtractor={(item) => item.$id!}
          />
     </SafeAreaView>
-  );
+  )
 };
 
 export default FileScreen;
