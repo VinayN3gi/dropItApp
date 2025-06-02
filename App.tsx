@@ -1,17 +1,16 @@
-import { ScrollView,Text,View } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import './global.css';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeScreen from './screens/HomeScreen';
 import SignInScreen from 'screens/SignInScreen';
 import SignUpScreen from 'screens/SignUpScreen';
 import { AuthProvider } from 'context/AuthContext';
 import { FileProvider } from 'context/FileContext';
 import TabNavigator from 'screens/TabNavigator';
-import { PaperProvider } from 'react-native-paper';
+import DetailsScreen from 'screens/DetailsScreen';
+
 
 
 
@@ -62,6 +61,7 @@ export default function App() {
              <Stack.Screen name="Tabs" component={TabNavigator} />
             <Stack.Screen name="SignIn" component={SignInScreen} />
             <Stack.Screen name="SignUp" component={SignUpScreen} />
+            <Stack.Screen name="Details" component={DetailsScreen}/>
           </Stack.Navigator>
         </NavigationContainer>
       </FileProvider>

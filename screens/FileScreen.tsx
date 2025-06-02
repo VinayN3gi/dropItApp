@@ -5,6 +5,7 @@ import { getFiles } from 'appwrite/fileAction';
 import { Models } from 'appwrite';
 import { Loader } from 'components/Loader';
 import Thumbnail from 'components/Thumbnail';
+import { useNavigation } from '@react-navigation/native';
 
 
 
@@ -35,14 +36,15 @@ const FileScreen = () => {
   const [searchText,setSearchText]=useState<string>(' ');
   const [sortText,setSortText]=useState<string | undefined>(undefined)
   const [showSortMenu, setShowSortMenu] = useState(false);
+  const naivgation=useNavigation<any>()
 
   const sortOptions = [
   {
-    label: "Created Date (newest)",
+    label: "Date (newest)",
     value: "$createdAt-desc",
   },
   {
-    label: "Created Date (oldest)",
+    label: "Date (oldest)",
     value: "$createdAt-asc",
   },
   {
@@ -83,7 +85,7 @@ const FileScreen = () => {
   if(loading)
   {
     return (
-       <SafeAreaView className="flex-1  bg-white">
+      <SafeAreaView className="flex-1  bg-white">
       <Text className="text-center font-poppins-bold mt-14 text-3xl text-light-100">Files</Text>
       <View className="flex-1 justify-center items-center bg-white">
         <Loader size="large" color="green" />
@@ -102,23 +104,23 @@ const FileScreen = () => {
 
   return (
     <SafeAreaView className="flex h-full mt-14 mx-6">
-      {/* Title and Sort Info */}
       <Text className="text-center font-poppins-bold text-3xl text-light-100">Files</Text>
-
-      <View className="flex-row justify-end mt-4 mb-6">
-        <TouchableOpacity onPress={() => setShowSortMenu(true)}>
-         <Text className="text-base font-poppins-medium">
-          <Text className="text-black">Sort by: </Text>
-          <Text className="text-light-200">
-            {sortOptions.find((o) => o.value === sortText)?.label || 'None'}
-          </Text>
+      <View className="flex-row justify-end items-center mt-4 mb-6 space-x-2">
+      <Text className="text-base font-poppins-regular text-black">Sort by:</Text>
+      <TouchableOpacity onPress={() => setShowSortMenu(true)}>
+        <Text className="text-base font-poppins-regular text-light-200">
+          {sortOptions.find((o) => o.value === sortText)?.label || 'None'}
         </Text>
-        </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
+    </View>
 
       <FlatList
         data={files}
-        renderItem={({ item }) => <Thumbnail file={item} />}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={()=>naivgation.navigate("Details",{file:item})}>
+            <Thumbnail file={item} />
+          </TouchableOpacity>
+        )}
         keyExtractor={(item) => item.$id!}
       />
 

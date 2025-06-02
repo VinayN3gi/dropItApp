@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Input } from 'components/Input';
 import { CustomButton } from 'components/Button';
 import { useNavigation } from '@react-navigation/native';
-import { Loader } from 'components/Loader';
 import { logIn } from 'appwrite/userAction';
 import { useAuth } from 'context/AuthContext';
 

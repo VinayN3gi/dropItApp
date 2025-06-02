@@ -24,12 +24,13 @@ type Document = {
 
 const Thumbnail = ({file}:{file:Document}) => {
     const {type,extension}=getFileType(file.name)
+
   return (
      <View className="bg-white rounded-2xl p-4 shadow-md mb-6">
       <View className="flex-row items-center space-x-4">
         {/* File Icon */}
         <View className="bg-gray-100 p-3 rounded-xl mr-4">
-          <IconComponent type={type} extension={extension} />
+          <IconComponent type={type} extension={extension} size={40}/>
         </View>
 
         {/* File Details */}
