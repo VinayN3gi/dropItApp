@@ -183,15 +183,13 @@ export const getUsageSummary = (totalSpace: any) => {
       title: "Documents",
       size: totalSpace.document.size,
       latestDate: totalSpace.document.latestDate,
-      icon: "/assets/icons/file-document-light.svg",
-      url: "/documents",
+      type:'document',
     },
     {
       title: "Images",
       size: totalSpace.image.size,
       latestDate: totalSpace.image.latestDate,
-      icon: "/assets/icons/file-image-light.svg",
-      url: "/images",
+      type:"image",
     },
     {
       title: "Media",
@@ -200,15 +198,13 @@ export const getUsageSummary = (totalSpace: any) => {
         totalSpace.video.latestDate > totalSpace.audio.latestDate
           ? totalSpace.video.latestDate
           : totalSpace.audio.latestDate,
-      icon: "/assets/icons/file-video-light.svg",
-      url: "/media",
+      type:"video",
     },
     {
       title: "Others",
       size: totalSpace.other.size,
       latestDate: totalSpace.other.latestDate,
-      icon: "/assets/icons/file-other-light.svg",
-      url: "/others",
+      type:"others",
     },
   ];
 };
@@ -241,4 +237,6 @@ export const parseStringify = (value: unknown) =>
 {
     return JSON.parse(JSON.stringify(value));
 }
+
+
   

@@ -74,3 +74,44 @@ export const getFiles=async({
     }
 }
 
+
+declare type FileType = "document" | "image" | "video" | "audio" | "other";
+
+export async function getTotalSpaceUsed({userId,email}:{userId:string,email:string}) {
+  try {
+    
+    const files = await databases.listDocuments(
+      appwriteConfig.databaseId!,
+      appwriteConfig.files!,
+      [Query.equal("accountId", [userId])],
+    );
+
+    const totalSpace = {
+      image: { size: 0, latestDate: "" },
+      document: { size: 0, latestDate: "" },
+      video: { size: 0, latestDate: "" },
+      audio: { size: 0, latestDate: "" },
+      other: { size: 0, latestDate: "" },
+      used: 0,
+      all: 2 * 1024 * 1024 * 1024 /* 2GB available bucket storage */,
+    };
+
+    files.documents.forEach((file) => {
+      const fileType = file.type as FileType;
+      totalSpace[fileType].size += file.size;
+      totalSpace.used += file.size;
+
+      if (
+        !totalSpace[fileType].latestDate ||
+        new Date(file.$updatedAt) > new Date(totalSpace[fileType].latestDate)
+      ) {
+        totalSpace[fileType].latestDate = file.$updatedAt;
+      }
+    });
+
+    return parseStringify(totalSpace);
+  } catch (error) {
+    console.log(error)
+    throw new Error('Unable to fetch')
+  }
+}
