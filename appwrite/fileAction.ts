@@ -1,6 +1,6 @@
-import { Client, Account, ID, Databases, Query } from 'appwrite';
+import { Client, Account, ID, Databases, Query ,Storage} from 'appwrite';
 import { appwriteConfig } from './config';
-import { parseStringify } from 'lib/utils';
+import { constructFileUrl, getFileType, parseStringify } from 'lib/utils';
 
 const client = new Client()
   .setEndpoint(appwriteConfig.endpointUrl!)
@@ -8,6 +8,7 @@ const client = new Client()
 
 const account = new Account(client);
 const databases = new Databases(client);
+const storage=new Storage(client)
 
 interface getFilesProps{
     userId:string | undefined,
@@ -115,3 +116,96 @@ export async function getTotalSpaceUsed({userId,email}:{userId:string,email:stri
     throw new Error('Unable to fetch')
   }
 }
+
+
+/*export const uploadFile=async({
+    file,
+    accountId,
+}:{file:any,accountId:string})=>{
+   
+    try {
+      
+        //For the file storage
+        const bucketFile=await storage.createFile(
+          appwriteConfig.bucketId!,
+          ID.unique(),
+          file // file should be a File or Blob object
+        )
+        
+
+        //For the metadata store using database
+        const fileDocument={
+            type:getFileType(bucketFile.name).type,
+            name:bucketFile.name,
+            url:constructFileUrl(bucketFile.$id),
+            extension:getFileType(bucketFile.name).extension,
+            size:bucketFile.sizeOriginal,
+            accountId,
+            users:[],
+            bucketFileId:bucketFile.$id
+        }
+       
+
+        //If metadata is not stored then delete file as well
+        const newFile=await databases.createDocument(
+            appwriteConfig.databaseId!,
+            appwriteConfig.files!,
+            ID.unique(),
+            fileDocument,
+        ).catch(async (error:any)=>{
+            await storage.deleteFile(
+                appwriteConfig.bucketId!,
+                bucketFile.$id
+            );
+            throw new Error(error.message as string)
+        })
+
+        //Returning the metadata
+        return parseStringify(newFile)
+
+
+    } catch (error:any) {
+        console.log(error)
+        throw new Error(error.message)
+    }}  
+*/
+
+export const uploadToAppwrite = async (file: {
+  uri: string;
+  name: string;
+  mimeType?: string;
+}) => {
+  try {
+     const formData = new FormData();
+
+    formData.append("fileId", "unique()");
+
+  formData.append('file', {
+    uri: file.uri,
+    name: file.name,
+    type: file.mimeType || 'application/octet-stream',
+  } as any);
+
+  const response = await fetch(
+    `https://cloud.appwrite.io/v1/storage/buckets/${appwriteConfig.bucketId}/files`,
+    {
+      method: 'POST',
+      headers: {
+        'X-Appwrite-Project': appwriteConfig.projectId ?? '',
+        'X-Appwrite-Key': appwriteConfig.secretKey ?? '',
+        'Content-Type': 'multipart/form-data',
+      },
+      body: formData,
+    }
+  );
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(JSON.stringify(data));
+  return parseStringify(data);
+  } 
+  catch (error:any) {
+    console.log(error)
+    throw new Error(error.message)
+  }
+ 
+};

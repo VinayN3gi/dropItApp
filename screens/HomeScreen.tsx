@@ -1,14 +1,14 @@
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native'
+import { FlatList, SafeAreaView,Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { getFiles, getTotalSpaceUsed } from 'appwrite/fileAction'
+import { getFiles, getTotalSpaceUsed, uploadToAppwrite} from 'appwrite/fileAction'
 import { useAuth } from 'context/AuthContext'
-import { Models } from 'appwrite'
+import { ID, Models } from 'appwrite'
 import Thumbnail from 'components/Thumbnail'
 import { Loader } from 'components/Loader'
 import { convertFileSize, formatDateTime, getUsageSummary } from 'lib/utils'
 import IconComponent from 'components/IconComponent'
 import { CustomButton } from 'components/Button'
-
+import * as DocumentPicker from 'expo-document-picker'
 
 
 type FileCategory = {
@@ -24,13 +24,48 @@ export default function HomeScreen() {
   const [loading,setLoading]=useState<boolean>(false)
   const [btnLoading,setBtnLoading]=useState<boolean>(false)
 
+  const pickAndUploadFile=async()=>{
+    try {
+      setBtnLoading(true)
+      const result = await DocumentPicker.getDocumentAsync({
+        type: '*/*',
+        copyToCacheDirectory: true,
+      });
+
+       if (result.canceled || !result.assets?.length) {
+        setBtnLoading(false);
+        return;
+      }
+
+      const file = result.assets[0];
+      const response = await fetch(file.uri);
+      const blob:Blob = await response.blob();
+      console.log(file.name)
+      console.log(blob.type,blob.type,file.uri)
+
+      const uploaded=await uploadToAppwrite({
+        uri:file.uri,
+        name:file.name,
+        mimeType:blob.type
+      })
+
+      console.log(uploaded)
+     
+      
+              
+    } catch (error) {
+      console.log(error)
+    }finally{
+      setBtnLoading(false)
+    }
+  }
+
   useEffect(()=>{
     const getUsage=async()=>{
       setLoading(true)
       try {
         const res=await getTotalSpaceUsed({userId:authUser.$id,email:authUser.email})
         const summary=getUsageSummary(res)
-        console.log(summary)
         setFiles(summary)
       } catch (error) {
         console.log(error)
@@ -42,7 +77,7 @@ export default function HomeScreen() {
   },[])
 
 
-    if (loading) {
+  if (loading) {
       return (
         <SafeAreaView className="flex-1 bg-white">
           <Text className="text-center font-poppins-bold mt-14 text-3xl text-light-100">
@@ -92,7 +127,7 @@ export default function HomeScreen() {
         )}
       />
       <View className='absolute-bottom mb-24'>
-        <CustomButton loading={btnLoading} title='Upload' onClick={()=>{}}/>
+        <CustomButton loading={btnLoading} title='Upload' onClick={()=>pickAndUploadFile()}/>
       </View>
     </SafeAreaView>
   )
