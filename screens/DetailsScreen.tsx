@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, TouchableOpacity, Linking, Alert } from 'react-native'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import BackHeader from 'components/BackHeader';
 import { constructDownloadUrl, convertFileSize, formatDateTime, getFileType } from 'lib/utils';
 import IconComponent from 'components/IconComponent';
