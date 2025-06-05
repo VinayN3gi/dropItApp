@@ -31,6 +31,7 @@ const DetailsScreen = ({route}:{route:any}) => {
   const {file}:{file:Document}=route.params
   const {type,extension}=getFileType(file.name)
   const [loading,setLoading]=useState<boolean>(false)
+  const [deleteLoading,setDeleteLoading]=useState<boolean>(false)
   const handleDownload = async (url: string) => {
   try {
     const supported = await Linking.canOpenURL(url);
@@ -60,6 +61,7 @@ const DetailsScreen = ({route}:{route:any}) => {
     <Attribute attribute='Date' value={formatDateTime(file.$createdAt)} className='mt-5'/>
     <Attribute attribute='Type' value={type} className='mt-5'/>
     <CustomButton title='Download' loading={loading} onClick={()=>handleDownload(constructDownloadUrl(file.bucketFileId))} className='mt-20'/>
+    <CustomButton title='Delete' loading={deleteLoading} onClick={()=>{}} className='mt-10 bg-red'/>
     </View>
     </SafeAreaView>
   )

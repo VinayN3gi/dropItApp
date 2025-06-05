@@ -147,6 +147,7 @@ const FileScreen = () => {
         </View>
       ) : (
         <FlatList
+        className='mb-24'
           data={files}
           renderItem={({ item }) => (
             <TouchableOpacity

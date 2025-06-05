@@ -2,6 +2,21 @@ import { Client, Account, ID, Databases, Query ,Storage} from 'appwrite';
 import { appwriteConfig } from './config';
 import { constructFileUrl, getFileType, parseStringify } from 'lib/utils';
 
+type AppwriteFile = {
+  $createdAt: string;
+  $id: string;
+  $permissions: string[];
+  $updatedAt: string;
+  bucketId: string;
+  chunksTotal: number;
+  chunksUploaded: number;
+  mimeType: string;
+  name: string;
+  signature: string;
+  sizeOriginal: number;
+};
+
+
 const client = new Client()
   .setEndpoint(appwriteConfig.endpointUrl!)
   .setProject(appwriteConfig.projectId!);
@@ -118,66 +133,15 @@ export async function getTotalSpaceUsed({userId,email}:{userId:string,email:stri
 }
 
 
-/*export const uploadFile=async({
-    file,
-    accountId,
-}:{file:any,accountId:string})=>{
-   
-    try {
-      
-        //For the file storage
-        const bucketFile=await storage.createFile(
-          appwriteConfig.bucketId!,
-          ID.unique(),
-          file // file should be a File or Blob object
-        )
-        
-
-        //For the metadata store using database
-        const fileDocument={
-            type:getFileType(bucketFile.name).type,
-            name:bucketFile.name,
-            url:constructFileUrl(bucketFile.$id),
-            extension:getFileType(bucketFile.name).extension,
-            size:bucketFile.sizeOriginal,
-            accountId,
-            users:[],
-            bucketFileId:bucketFile.$id
-        }
-       
-
-        //If metadata is not stored then delete file as well
-        const newFile=await databases.createDocument(
-            appwriteConfig.databaseId!,
-            appwriteConfig.files!,
-            ID.unique(),
-            fileDocument,
-        ).catch(async (error:any)=>{
-            await storage.deleteFile(
-                appwriteConfig.bucketId!,
-                bucketFile.$id
-            );
-            throw new Error(error.message as string)
-        })
-
-        //Returning the metadata
-        return parseStringify(newFile)
-
-
-    } catch (error:any) {
-        console.log(error)
-        throw new Error(error.message)
-    }}  
-*/
-
+//Directly hitting the endpoint because create storage does not work for 
 export const uploadToAppwrite = async (file: {
   uri: string;
   name: string;
   mimeType?: string;
+  accountId:string
 }) => {
   try {
      const formData = new FormData();
-
     formData.append("fileId", "unique()");
 
   formData.append('file', {
@@ -199,9 +163,36 @@ export const uploadToAppwrite = async (file: {
     }
   );
 
-  const data = await response.json();
+  const data :AppwriteFile= await response.json();
   if (!response.ok) throw new Error(JSON.stringify(data));
-  return parseStringify(data);
+
+  // Use accountId from the file parameter, not from the response data
+  const fileDocument = {
+    type: getFileType(data.name).type,
+    name: data.name,
+    url: constructFileUrl(data.$id),
+    extension: getFileType(data.name).extension,
+    size: data.sizeOriginal,
+    owners: file.accountId,
+    users:[],
+    bucketFileId:data.$id,
+    accountId:file.accountId
+  }
+   const newFile=await databases.createDocument(
+            appwriteConfig.databaseId!,
+            appwriteConfig.files!,
+            ID.unique(),
+            fileDocument,
+        ).catch(async (error:unknown)=>{
+            await storage.deleteFile(
+                appwriteConfig.bucketId!,
+                data.$id
+            );
+            console.log(error)
+            throw new Error("Failed to create file document")
+        })
+
+  return parseStringify(newFile);
   } 
   catch (error:any) {
     console.log(error)

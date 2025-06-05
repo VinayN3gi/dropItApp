@@ -1,9 +1,8 @@
-import { FlatList, SafeAreaView,Text, View } from 'react-native'
+import { Alert, FlatList, SafeAreaView,Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { getFiles, getTotalSpaceUsed, uploadToAppwrite} from 'appwrite/fileAction'
 import { useAuth } from 'context/AuthContext'
 import { ID, Models } from 'appwrite'
-import Thumbnail from 'components/Thumbnail'
 import { Loader } from 'components/Loader'
 import { convertFileSize, formatDateTime, getUsageSummary } from 'lib/utils'
 import IconComponent from 'components/IconComponent'
@@ -40,21 +39,15 @@ export default function HomeScreen() {
       const file = result.assets[0];
       const response = await fetch(file.uri);
       const blob:Blob = await response.blob();
-      console.log(file.name)
-      console.log(blob.type,blob.type,file.uri)
-
       const uploaded=await uploadToAppwrite({
         uri:file.uri,
         name:file.name,
-        mimeType:blob.type
+        mimeType:blob.type,
+        accountId:authUser.$id
       })
-
-      console.log(uploaded)
-     
-      
-              
-    } catch (error) {
-      console.log(error)
+                
+    } catch (error:any) {
+      Alert.alert(error.message)
     }finally{
       setBtnLoading(false)
     }
@@ -67,8 +60,8 @@ export default function HomeScreen() {
         const res=await getTotalSpaceUsed({userId:authUser.$id,email:authUser.email})
         const summary=getUsageSummary(res)
         setFiles(summary)
-      } catch (error) {
-        console.log(error)
+      } catch (error:any) {
+        Alert.alert(error.message)
       }finally{
         setLoading(false)
       }
