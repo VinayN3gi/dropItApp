@@ -198,5 +198,22 @@ export const uploadToAppwrite = async (file: {
     console.log(error)
     throw new Error(error.message)
   }
- 
 };
+
+export const deleteFile=async({fileId,bucketFileId}:{fileId:string,bucketFileId:string})=>{
+  try {
+    const deletedFile=await databases.deleteDocument(
+      appwriteConfig.databaseId!,
+      appwriteConfig.files!,
+      fileId,
+    )
+    if(deletedFile)
+    {
+      await storage.deleteFile(appwriteConfig.bucketId!,bucketFileId)
+    }
+
+    return parseStringify(deletedFile)
+  } catch (error:any) {
+      throw new Error(error.message)
+  }
+}

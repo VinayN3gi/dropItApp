@@ -5,6 +5,9 @@ import { constructDownloadUrl, convertFileSize, formatDateTime, getFileType } fr
 import IconComponent from 'components/IconComponent';
 import Attribute from 'components/Attribute';
 import { CustomButton } from 'components/Button';
+import { deleteFile } from 'appwrite/fileAction';
+import { useNavigation } from '@react-navigation/native';
+import { useFileContext } from 'context/FileContext';
 
 
 type Document = {
@@ -32,6 +35,8 @@ const DetailsScreen = ({route}:{route:any}) => {
   const {type,extension}=getFileType(file.name)
   const [loading,setLoading]=useState<boolean>(false)
   const [deleteLoading,setDeleteLoading]=useState<boolean>(false)
+  const navigation=useNavigation<any>()
+  const {refreshFlag,triggerRefresh}=useFileContext()
   const handleDownload = async (url: string) => {
   try {
     const supported = await Linking.canOpenURL(url);
@@ -47,7 +52,24 @@ const DetailsScreen = ({route}:{route:any}) => {
   }finally{
     setLoading(false)
   }
-};
+  };
+
+  const handleDelete=async({fileId,bucketFileId}:{fileId:string,bucketFileId:string})=>{
+    setDeleteLoading(true)
+    try {
+      const deletedFile=await deleteFile({fileId:fileId,bucketFileId:bucketFileId})
+      console.log(`File deleted ${deletedFile}`)
+      triggerRefresh()
+      navigation.goBack()
+    } catch (error:any) {
+      console.error(error)
+      Alert.alert('Error',error.message)
+    }finally{
+      setDeleteLoading(false)
+    }
+  }
+
+
 
   return (
     <SafeAreaView className='flex bg-white flex-1'>
@@ -61,7 +83,7 @@ const DetailsScreen = ({route}:{route:any}) => {
     <Attribute attribute='Date' value={formatDateTime(file.$createdAt)} className='mt-5'/>
     <Attribute attribute='Type' value={type} className='mt-5'/>
     <CustomButton title='Download' loading={loading} onClick={()=>handleDownload(constructDownloadUrl(file.bucketFileId))} className='mt-20'/>
-    <CustomButton title='Delete' loading={deleteLoading} onClick={()=>{}} className='mt-10 bg-red'/>
+    <CustomButton title='Delete' loading={deleteLoading} onClick={()=>handleDelete({fileId:file.$id!,bucketFileId:file.bucketFileId})} className='mt-10 bg-red'/>
     </View>
     </SafeAreaView>
   )

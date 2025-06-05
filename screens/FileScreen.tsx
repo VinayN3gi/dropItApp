@@ -15,6 +15,7 @@ import { Loader } from 'components/Loader';
 import Thumbnail from 'components/Thumbnail';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import { useFileContext } from 'context/FileContext';
 
 type Document = {
   $collectionId?: string;
@@ -44,7 +45,7 @@ const FileScreen = () => {
   const [type1, setType1] = useState<string | undefined>(undefined);
   const [showTypeModal, setShowTypeModal] = useState(false);
   const navigation = useNavigation<any>();
-
+  const {refreshFlag}=useFileContext()
   const sortOptions = [
     { label: 'Date (newest)', value: '$createdAt-desc' },
     { label: 'Date (oldest)', value: '$createdAt-asc' },
@@ -82,7 +83,7 @@ const FileScreen = () => {
     if (authUser) {
       fetchFiles();
     }
-  }, [authUser, searchText, sortText, type1]);
+  }, [authUser, searchText, sortText, type1,refreshFlag]);
 
   if (loading) {
     return (
