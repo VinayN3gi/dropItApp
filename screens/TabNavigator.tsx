@@ -7,6 +7,8 @@ import FileScreen from './FileScreen';
 
 const Tab = createBottomTabNavigator();
 
+
+
 const TabNavigator=()=>{
     return(
          <Tab.Navigator
@@ -42,3 +44,7 @@ const TabNavigator=()=>{
 }
 
 export default TabNavigator
+
+function createStackNavigator() {
+  throw new Error('Function not implemented.');
+}

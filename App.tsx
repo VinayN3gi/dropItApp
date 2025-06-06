@@ -10,10 +10,7 @@ import { AuthProvider } from 'context/AuthContext';
 import { FileProvider } from 'context/FileContext';
 import TabNavigator from 'screens/TabNavigator';
 import DetailsScreen from 'screens/DetailsScreen';
-
-
-
-
+import ProfileScreen from 'screens/ProfileScreen';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -62,6 +59,7 @@ export default function App() {
             <Stack.Screen name="SignIn" component={SignInScreen} />
             <Stack.Screen name="SignUp" component={SignUpScreen} />
             <Stack.Screen name="Details" component={DetailsScreen}/>
+            <Stack.Screen name="Profile" component={ProfileScreen}/>
           </Stack.Navigator>
         </NavigationContainer>
       </FileProvider>

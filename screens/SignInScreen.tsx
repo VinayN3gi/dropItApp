@@ -41,7 +41,7 @@ const SignInScreen = () => {
         const user=await logIn(email,password)
         if(user.success)
         {
-          navigation.navigate('Home')
+          navigation.navigate('Tabs')
         }
         else
         {

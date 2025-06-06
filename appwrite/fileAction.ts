@@ -217,3 +217,13 @@ export const deleteFile=async({fileId,bucketFileId}:{fileId:string,bucketFileId:
       throw new Error(error.message)
   }
 }
+
+
+export const logOut=async()=>{
+   try {
+    await account.deleteSession('current'); 
+    return true
+  } catch (error:any) {
+    throw new Error(error.message);
+  }
+}

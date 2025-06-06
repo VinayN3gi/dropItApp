@@ -1,8 +1,12 @@
-import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Loader } from 'components/Loader';
 import { getUser } from 'appwrite/userAction';
 import { CustomButton } from 'components/Button';
+import { logOut } from 'appwrite/fileAction';
+import { useNavigation } from '@react-navigation/native';
+import Attribute from 'components/Attribute';
+
 
 type User = {
   $createdAt: string;
@@ -27,6 +31,8 @@ const ProfileScreen = () => {
   const [user, setUser] = useState<User | undefined>(undefined);
   const [refresh, setRefresh] = useState<boolean>(false);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
+  const navigation=useNavigation<any>()
+
 
   useEffect(() => {
     setLoading(true);
@@ -45,6 +51,22 @@ const ProfileScreen = () => {
 
     fetchUser();
   }, [refresh]);
+
+
+  const handleLogout=async()=>{
+    setBtnLoading(true)
+    try {
+      const res:any=await logOut()
+      if(res)
+      {
+         navigation.navigate("SignIn")
+      }
+    } catch (error:any) {
+      Alert.alert(error.message)
+    }finally{
+      setBtnLoading(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -96,10 +118,12 @@ const ProfileScreen = () => {
       </Text>
       <View className="flex-1 justify-between">
         <View>
-          
+          <Attribute attribute="Name" value={user.name} />
+          <Attribute attribute='Email' value={user.email}/>
+          <Attribute attribute='Id' value={user.$id}/>
         </View>
         <View className="mb-24">
-          <CustomButton title="Log Out" loading={btnLoading} onClick={() => {}} />
+          <CustomButton title="Log Out" loading={btnLoading} onClick={() => handleLogout()} />
         </View>
       </View>
     </SafeAreaView>

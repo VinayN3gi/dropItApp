@@ -16,6 +16,7 @@ import Thumbnail from 'components/Thumbnail';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { useFileContext } from 'context/FileContext';
+import { getUser } from 'appwrite/userAction';
 
 type Document = {
   $collectionId?: string;
@@ -65,9 +66,10 @@ const FileScreen = () => {
     const fetchFiles = async () => {
       setLoading(true);
       try {
+        const user=await getUser()
         const result = await getFiles({
-          email: authUser.email,
-          userId: authUser.$id,
+          email: user.user!.email,
+          userId: user.user!.$id,
           searchText,
           sortText,
           type1,
@@ -79,10 +81,7 @@ const FileScreen = () => {
         setLoading(false);
       }
     };
-
-    if (authUser) {
       fetchFiles();
-    }
   }, [authUser, searchText, sortText, type1,refreshFlag]);
 
   if (loading) {

@@ -8,6 +8,7 @@ import { convertFileSize, formatDateTime, getUsageSummary } from 'lib/utils'
 import IconComponent from 'components/IconComponent'
 import { CustomButton } from 'components/Button'
 import * as DocumentPicker from 'expo-document-picker'
+import { getUser } from 'appwrite/userAction'
 
 
 type FileCategory = {
@@ -18,7 +19,7 @@ type FileCategory = {
 };
 
 export default function HomeScreen() {
-  const {authUser}:{authUser:Models.User<any>}=useAuth()
+  const {authUser,setAuthUser}:{authUser:Models.User<any>,setAuthUser:any}=useAuth()
   const [files,setFiles]=useState<FileCategory[]>([]);
   const [loading,setLoading]=useState<boolean>(false)
   const [btnLoading,setBtnLoading]=useState<boolean>(false)
@@ -36,6 +37,7 @@ export default function HomeScreen() {
         return;
       }
 
+      const user=await getUser()
       const file = result.assets[0];
       const response = await fetch(file.uri);
       const blob:Blob = await response.blob();
@@ -43,7 +45,7 @@ export default function HomeScreen() {
         uri:file.uri,
         name:file.name,
         mimeType:blob.type,
-        accountId:authUser.$id
+        accountId:user.user!.$id
       })
                 
     } catch (error:any) {
@@ -55,9 +57,11 @@ export default function HomeScreen() {
 
   useEffect(()=>{
     const getUsage=async()=>{
+     
       setLoading(true)
       try {
-        const res=await getTotalSpaceUsed({userId:authUser.$id,email:authUser.email})
+        const user=await getUser()
+        const res=await getTotalSpaceUsed({userId:user.user!.$id,email:user.user!.email})
         const summary=getUsageSummary(res)
         setFiles(summary)
       } catch (error:any) {
@@ -67,7 +71,7 @@ export default function HomeScreen() {
       }
     }
     getUsage()
-  },[])
+  },[authUser])
 
 
   if (loading) {
