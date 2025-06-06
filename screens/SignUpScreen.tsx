@@ -99,7 +99,7 @@ const SignUpScreen = () => {
            <Input
              label="Password"
              placeholder="Enter your password"
-             secureTextEntry
+             secureTextEntry={true}
              onChangeText={(e)=>{
                setPasswordError(undefined)
                setEmailError(undefined)
