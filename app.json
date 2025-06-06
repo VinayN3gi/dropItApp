@@ -3,20 +3,18 @@
     "name": "dropItApp",
     "slug": "dropItApp",
     "version": "1.0.0",
-
     "web": {
       "favicon": "./assets/favicon.png"
     },
-
     "experiments": {
       "tsconfigPaths": true
     },
-
     "plugins": [
       "expo-router",
       [
-        "expo-font",{
-          "fonts":[
+        "expo-font",
+        {
+          "fonts": [
             "./assets/Poppins/Poppins-Black.ttf",
             "./assets/Poppins/Poppins-BlackItalic.ttf",
             "./assets/Poppins/Poppins-Bold.ttf",
@@ -39,18 +37,17 @@
         }
       ]
     ],
-
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-
     "userInterfaceStyle": "light",
-
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -58,7 +55,15 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "package": "com.vinayne.dropItApp"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "eb827cb2-59de-4338-897e-b5b8ff093394"
       }
-    }
+    },
+    "owner": "vinayne"
   }
 }

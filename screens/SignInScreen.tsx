@@ -1,4 +1,4 @@
-import { View, Text, Image, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Input } from 'components/Input';
 import { CustomButton } from 'components/Button';
@@ -49,6 +49,7 @@ const SignInScreen = () => {
         }
       } catch (error:any) {
         console.log(error.message)
+        Alert.alert('Error',error.message)
       }
       finally{
       setEmail('')

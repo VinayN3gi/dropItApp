@@ -1,11 +1,10 @@
-import { View, Text, Image, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { Input } from 'components/Input';
 import { CustomButton } from 'components/Button';
 import { useNavigation } from '@react-navigation/native';
 import { createUser } from 'appwrite/userAction';
 
-//Create eye icon for password
 
 const SignUpScreen = () => {
    const navigation = useNavigation<any>();
@@ -44,6 +43,7 @@ const SignUpScreen = () => {
               else throw new Error(user.error)
           } catch (error:any) {
             console.log(error.message)
+            Alert.alert('Error',error.message)
           }
           finally{
           setEmail('')
