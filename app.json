@@ -49,7 +49,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vinayne.dropItApp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -64,6 +68,12 @@
         "projectId": "eb827cb2-59de-4338-897e-b5b8ff093394"
       }
     },
-    "owner": "vinayne"
+    "owner": "vinayne",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/eb827cb2-59de-4338-897e-b5b8ff093394"
+    }
   }
 }
