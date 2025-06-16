@@ -9,6 +9,7 @@ import IconComponent from 'components/IconComponent'
 import { CustomButton } from 'components/Button'
 import * as DocumentPicker from 'expo-document-picker'
 import { getUser } from 'appwrite/userAction'
+import { useFileContext } from 'context/FileContext'
 
 
 type FileCategory = {
@@ -23,6 +24,7 @@ export default function HomeScreen() {
   const [files,setFiles]=useState<FileCategory[]>([]);
   const [loading,setLoading]=useState<boolean>(false)
   const [btnLoading,setBtnLoading]=useState<boolean>(false)
+  const {triggerRefresh}=useFileContext()
 
   const pickAndUploadFile=async()=>{
     try {
@@ -47,7 +49,7 @@ export default function HomeScreen() {
         mimeType:blob.type,
         accountId:user.user!.$id
       })
-                
+      triggerRefresh()
     } catch (error:any) {
       Alert.alert(error.message)
     }finally{
@@ -71,7 +73,7 @@ export default function HomeScreen() {
       }
     }
     getUsage()
-  },[authUser])
+  },[])
 
 
   if (loading) {

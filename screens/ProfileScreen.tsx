@@ -49,6 +49,7 @@ const ProfileScreen = () => {
       }
     };
 
+    
     fetchUser();
   }, [refresh]);
 
