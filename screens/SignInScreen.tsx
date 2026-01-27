@@ -66,7 +66,7 @@ const SignInScreen = () => {
         {/* Logo */}
         <Image
           source={require('../assets/splash-icon.png')}
-          className="w-32 h-32 self-center mb-8"
+          className="w-40 h-40 self-center mb-8"
           resizeMode="contain"
         />
         {/* Inputs */}
