@@ -1,8 +1,8 @@
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import './global.css';
 import { NavigationContainer } from '@react-navigation/native';
+import "./global.css"
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SignInScreen from 'screens/SignInScreen';
 import SignUpScreen from 'screens/SignUpScreen';
@@ -55,11 +55,11 @@ export default function App() {
       <FileProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
-             <Stack.Screen name="Tabs" component={TabNavigator} />
-            <Stack.Screen name="SignIn" component={SignInScreen} />
+           <Stack.Screen name="Tabs" component={TabNavigator} />
+           <Stack.Screen name="SignIn" component={SignInScreen} />
             <Stack.Screen name="SignUp" component={SignUpScreen} />
             <Stack.Screen name="Details" component={DetailsScreen}/>
-            <Stack.Screen name="Profile" component={ProfileScreen}/>
+            <Stack.Screen name="Profile" component={ProfileScreen}/> 
           </Stack.Navigator>
         </NavigationContainer>
       </FileProvider>
