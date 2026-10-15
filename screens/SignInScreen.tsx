@@ -72,11 +72,11 @@ const SignInScreen = () => {
           <View className="w-full max-w-md self-center">
             {/* Logo & Brand Header */}
             <View className="items-center mb-8">
-              <Image
+              {/*<Image
                 source={require('../assets/splash-icon.png')}
                 className="w-24 h-24 mb-3"
                 resizeMode="contain"
-              />
+              /> */}
               <Text className="text-gray-900 font-poppins-bold text-2xl text-center">
                 Welcome Back
               </Text>

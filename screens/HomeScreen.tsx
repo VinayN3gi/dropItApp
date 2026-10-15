@@ -208,7 +208,11 @@ export default function HomeScreen({ navigation }: { navigation?: any }) {
             </Text>
             <TouchableOpacity onPress={() => {
               setActiveFilter(undefined);
-              navigation?.navigate('Files');
+              try {
+                navigation?.navigate('Files');
+              } catch (e) {
+                console.warn('Navigation error:', e);
+              }
             }}>
               <Text className="font-poppins-medium text-brand text-xs">
                 View all files
