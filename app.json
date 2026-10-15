@@ -10,7 +10,6 @@
       "tsconfigPaths": true
     },
     "plugins": [
-      "expo-router",
       [
         "expo-font",
         {
@@ -35,16 +34,20 @@
             "./assets/Poppins/Poppins-ThinItalic.ttf"
           ]
         }
-      ]
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      "expo-status-bar"
     ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -63,7 +66,6 @@
       "package": "com.vinayne.dropItApp"
     },
     "extra": {
-      "router": {},
       "eas": {
         "projectId": "eb827cb2-59de-4338-897e-b5b8ff093394"
       }

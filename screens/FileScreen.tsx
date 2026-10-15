@@ -14,7 +14,7 @@ import { Models } from 'appwrite';
 import { Loader } from 'components/Loader';
 import Thumbnail from 'components/Thumbnail';
 import { useNavigation } from '@react-navigation/native';
-import Ionicons from '@react-native-vector-icons/ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFileContext } from 'context/FileContext';
 import { getUser } from 'appwrite/userAction';
 

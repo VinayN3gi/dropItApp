@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
-import Ionicons from '@react-native-vector-icons/ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const BackHeader = () => {
   const navigation=useNavigation<any>()
