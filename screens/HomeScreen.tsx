@@ -130,6 +130,7 @@ export default function HomeScreen({ navigation }: { navigation?: any }) {
     document: { bg: 'bg-emerald-50', text: 'text-emerald-700', iconBg: 'bg-emerald-100' },
     image: { bg: 'bg-blue-50', text: 'text-blue-700', iconBg: 'bg-blue-100' },
     video: { bg: 'bg-purple-50', text: 'text-purple-700', iconBg: 'bg-purple-100' },
+    media: { bg: 'bg-purple-50', text: 'text-purple-700', iconBg: 'bg-purple-100' },
     others: { bg: 'bg-amber-50', text: 'text-amber-700', iconBg: 'bg-amber-100' },
   };
 
@@ -210,7 +211,7 @@ export default function HomeScreen({ navigation }: { navigation?: any }) {
               navigation?.navigate('Files');
             }}>
               <Text className="font-poppins-medium text-brand text-xs">
-                View all files →
+                View all files
               </Text>
             </TouchableOpacity>
           </View>
@@ -220,20 +221,14 @@ export default function HomeScreen({ navigation }: { navigation?: any }) {
             {files.map((item) => {
               const theme = categoryColors[item.type] || categoryColors.others;
               return (
-                <TouchableOpacity
+                <View
                   key={item.title}
-                  activeOpacity={0.7}
-                  onPress={() => {
-                    setActiveFilter(item.type);
-                    navigation?.navigate('Files');
-                  }}
                   className="w-[48%] bg-white border border-gray-100 rounded-2xl p-4 mb-4 shadow-sm"
                 >
                   <View className="flex-row justify-between items-start mb-3">
                     <View className={`w-11 h-11 rounded-xl items-center justify-center ${theme.iconBg}`}>
                       <IconComponent extension={undefined} type={item.type} size={22} />
                     </View>
-                    <Ionicons name="chevron-forward" size={16} color="#CBD5E1" />
                   </View>
 
                   <Text className="font-poppins-semibold text-gray-800 text-base" numberOfLines={1}>
@@ -247,7 +242,7 @@ export default function HomeScreen({ navigation }: { navigation?: any }) {
                   <Text className="font-poppins-regular text-gray-400 text-[10px] mt-2" numberOfLines={1}>
                     {item.latestDate ? `Updated ${formatDateTime(item.latestDate)}` : 'No files'}
                   </Text>
-                </TouchableOpacity>
+                </View>
               );
             })}
           </View>

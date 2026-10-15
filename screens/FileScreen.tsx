@@ -198,7 +198,7 @@ const FileScreen = ({ navigation }: { navigation?: any }) => {
         </View>
 
         {/* Horizontal Category Filter Pills */}
-        <View className="mb-3">
+        {/*<View className="mb-3">
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -232,7 +232,7 @@ const FileScreen = ({ navigation }: { navigation?: any }) => {
               );
             })}
           </ScrollView>
-        </View>
+        </View> */}
 
         {/* Filter and Sort summary row */}
         <View className="flex-row justify-between items-center mb-3 px-1">
@@ -249,7 +249,7 @@ const FileScreen = ({ navigation }: { navigation?: any }) => {
               {currentSortLabel}
             </Text>
           </TouchableOpacity>
-        </View>
+        </View> 
 
         {/* Files List / Loading State */}
         {loading && !refreshing ? (
