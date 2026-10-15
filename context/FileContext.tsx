@@ -3,20 +3,25 @@ import React, { createContext, useContext, useState } from 'react';
 type FileContextType = {
   refreshFlag: boolean;
   triggerRefresh: () => void;
+  activeFilter: string | undefined;
+  setActiveFilter: (filter: string | undefined) => void;
 };
 
 const FileContext = createContext<FileContextType | undefined>(undefined);
 
 export const FileProvider = ({ children }: { children: React.ReactNode }) => {
   const [refreshFlag, setRefreshFlag] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string | undefined>(undefined);
+
   const triggerRefresh = () => setRefreshFlag(prev => !prev);
 
   return (
-    <FileContext.Provider value={{ refreshFlag, triggerRefresh }}>
+    <FileContext.Provider value={{ refreshFlag, triggerRefresh, activeFilter, setActiveFilter }}>
       {children}
     </FileContext.Provider>
   );
 };
+
 export const useFileContext = () => {
   const context = useContext(FileContext);
   if (!context) throw new Error('useFileContext must be used within a FileProvider');

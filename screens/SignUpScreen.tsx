@@ -14,6 +14,7 @@ import { CustomButton } from 'components/Button';
 import { useNavigation } from '@react-navigation/native';
 import { createUser } from 'appwrite/userAction';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from 'context/AuthContext';
 
 const SignUpScreen = () => {
   const insets = useSafeAreaInsets();
@@ -25,6 +26,7 @@ const SignUpScreen = () => {
   const [userName, setUsername] = useState<string>('');
   const [usernameError, setUsernameError] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
+  const { setAuthUser } = useAuth();
 
   const handleClick = async ({
     email,
@@ -47,8 +49,8 @@ const SignUpScreen = () => {
       setLoading(true);
       try {
         const user = await createUser(email, password, userName);
-        if (user.success) {
-          navigation.replace('Tabs');
+        if (user.success && user.user) {
+          setAuthUser(user.user);
         } else {
           throw new Error(user.error);
         }

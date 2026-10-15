@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,11 +15,11 @@ import { getFiles } from 'appwrite/fileAction';
 import { Models } from 'appwrite';
 import { Loader } from 'components/Loader';
 import Thumbnail from 'components/Thumbnail';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFileContext } from 'context/FileContext';
 import { getUser } from 'appwrite/userAction';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 
 type Document = {
   $collectionId?: string;
@@ -39,12 +39,20 @@ type Document = {
   users?: string[];
 };
 
-const FileScreen = () => {
+
+const normalizeType = (t?: string) => {
+  if (!t) return undefined;
+  if (t === 'others') return 'other';
+  if (t === 'documents') return 'document';
+  if (t === 'images') return 'image';
+  if (t === 'media' || t === 'video,audio') return 'media';
+  return t;
+};
+
+const FileScreen = ({ navigation }: { navigation?: any }) => {
   const insets = useSafeAreaInsets();
-  const route = useRoute<any>();
-  const navigation = useNavigation<any>();
   const { authUser }: { authUser: Models.User<any> } = useAuth();
-  const { refreshFlag, triggerRefresh } = useFileContext();
+  const { refreshFlag, activeFilter, setActiveFilter } = useFileContext();
 
   const [files, setFiles] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +60,8 @@ const FileScreen = () => {
   const [searchText, setSearchText] = useState<string>('');
   const [sortText, setSortText] = useState<string>('$createdAt-desc');
   const [showSortMenu, setShowSortMenu] = useState(false);
-  const [type1, setType1] = useState<string | undefined>(route.params?.initialType || undefined);
+  // Local filter state — seeded from context when tab is focused
+  const [type1, setType1] = useState<string | undefined>(normalizeType(activeFilter));
 
   const sortOptions = [
     { label: 'Newest First', value: '$createdAt-desc', icon: 'time-outline' },
@@ -65,33 +74,55 @@ const FileScreen = () => {
     { label: 'All Files', value: undefined, icon: 'grid-outline' },
     { label: 'Documents', value: 'document', icon: 'document-text-outline' },
     { label: 'Images', value: 'image', icon: 'image-outline' },
+    { label: 'Media', value: 'media', icon: 'film-outline' },
     { label: 'Videos', value: 'video', icon: 'videocam-outline' },
     { label: 'Audios', value: 'audio', icon: 'musical-notes-outline' },
     { label: 'Others', value: 'other', icon: 'folder-outline' },
   ];
 
-  // Sync route param changes (e.g. from Home category clicks)
-  useEffect(() => {
-    if (route.params?.initialType !== undefined) {
-      setType1(route.params.initialType);
-    }
-  }, [route.params?.initialType]);
+  // When the Files tab gains focus, sync the filter set from HomeScreen via context
+  useFocusEffect(
+    useCallback(() => {
+      const normalized = normalizeType(activeFilter);
+      setType1(normalized);
+    }, [activeFilter])
+  );
+
+  // When user manually picks a pill, clear the context filter so it doesn't override later
+  const handleSetType = (val: string | undefined) => {
+    setType1(val);
+    setActiveFilter(undefined);
+  };
 
   const fetchFiles = async (isRefresh = false) => {
     if (!isRefresh) setLoading(true);
     try {
-      const user = await getUser();
-      if (!user?.user) return;
+      let email = authUser?.email;
+      let userId = authUser?.$id;
+
+      if (!userId || !email) {
+        const userRes = await getUser();
+        if (!userRes?.user) return;
+        email = userRes.user.email;
+        userId = userRes.user.$id;
+      }
+
+      // Expand 'media' into video + audio for the query
+      const queryType1 = type1 === 'media' ? 'video' : type1;
+      const queryType2 = type1 === 'media' ? 'audio' : undefined;
+
       const result = await getFiles({
-        email: user.user.email,
-        userId: user.user.$id,
+        email,
+        userId,
         searchText: searchText.trim(),
         sortText,
-        type1,
+        type1: queryType1,
+        type2: queryType2,
       });
-      setFiles(result.documents);
+      setFiles(result?.documents || []);
     } catch (error) {
       console.error('Error fetching files:', error);
+      setFiles([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -125,22 +156,6 @@ const FileScreen = () => {
     return sortOptions.find((o) => o.value === sortText)?.label || 'Newest';
   }, [sortText]);
 
-  if (loading && !refreshing) {
-    return (
-      <View
-        style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
-        className="flex-1 bg-gray-50 justify-center items-center px-6"
-      >
-        <Loader size="large" color="#43A047" />
-        <Text className="font-poppins-bold text-gray-800 text-lg mt-4 text-center">
-          Loading your files...
-        </Text>
-        <Text className="font-poppins-regular text-gray-400 text-sm mt-1 text-center">
-          Fetching from Appwrite Cloud
-        </Text>
-      </View>
-    );
-  }
 
   return (
     <View
@@ -194,7 +209,7 @@ const FileScreen = () => {
               return (
                 <TouchableOpacity
                   key={opt.label}
-                  onPress={() => setType1(opt.value)}
+                  onPress={() => handleSetType(opt.value)}
                   className={`flex-row items-center px-3.5 py-1.5 rounded-full mr-2 border ${
                     active
                       ? 'bg-brand border-brand shadow-sm'
@@ -236,8 +251,15 @@ const FileScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Files List */}
-        {files.length === 0 ? (
+        {/* Files List / Loading State */}
+        {loading && !refreshing ? (
+          <View className="flex-1 justify-center items-center py-20 px-6">
+            <Loader size="large" color="#43A047" />
+            <Text className="font-poppins-semibold text-gray-800 text-sm mt-3 text-center">
+              Fetching files...
+            </Text>
+          </View>
+        ) : files.length === 0 ? (
           <View className="flex-1 justify-center items-center py-16 px-6">
             <View className="w-16 h-16 rounded-full bg-emerald-50 items-center justify-center mb-4">
               <Ionicons name="folder-open-outline" size={32} color="#43A047" />
@@ -254,7 +276,7 @@ const FileScreen = () => {
               <TouchableOpacity
                 onPress={() => {
                   setSearchText('');
-                  setType1(undefined);
+                  handleSetType(undefined);
                 }}
                 className="mt-4 px-4 py-2 bg-brand/10 border border-brand/20 rounded-xl"
               >
@@ -275,12 +297,12 @@ const FileScreen = () => {
             renderItem={({ item }) => (
               <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={() => navigation.navigate('Details', { file: item })}
+                onPress={() => navigation?.navigate('Details', { file: item })}
               >
                 <Thumbnail file={item} />
               </TouchableOpacity>
             )}
-            keyExtractor={(item) => item.$id!}
+            keyExtractor={(item) => item.$id || Math.random().toString()}
           />
         )}
       </View>

@@ -11,7 +11,7 @@ import * as DocumentPicker from 'expo-document-picker'
 import { getUser } from 'appwrite/userAction'
 import { useFileContext } from 'context/FileContext'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
+
 import { Ionicons } from '@expo/vector-icons'
 
 type FileCategory = {
@@ -21,31 +21,36 @@ type FileCategory = {
   type: string;
 };
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }: { navigation?: any }) {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<any>();
   const { authUser }: { authUser: Models.User<any> } = useAuth();
   const [files, setFiles] = useState<FileCategory[]>([]);
   const [totalBytesUsed, setTotalBytesUsed] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
-  const { triggerRefresh, refreshFlag } = useFileContext();
+  const { triggerRefresh, refreshFlag, setActiveFilter } = useFileContext();
 
   const pickAndUploadFile = async () => {
     try {
-      setBtnLoading(true);
       const result = await DocumentPicker.getDocumentAsync({
         type: '*/*',
         copyToCacheDirectory: true,
       });
 
-      if (result.canceled || !result.assets?.length) {
+      if (result.canceled || !result.assets || result.assets.length === 0) {
         setBtnLoading(false);
         return;
       }
 
+      // User chose a file - now show upload loader
+      setBtnLoading(true);
+
       const user = await getUser();
+      if (!user?.user) {
+        throw new Error('User session not found');
+      }
+
       const file = result.assets[0];
       const response = await fetch(file.uri);
       const blob: Blob = await response.blob();
@@ -53,12 +58,12 @@ export default function HomeScreen() {
         uri: file.uri,
         name: file.name,
         mimeType: blob.type,
-        accountId: user.user!.$id,
+        accountId: user.user.$id,
       });
       triggerRefresh();
       fetchUsage();
     } catch (error: any) {
-      Alert.alert('Upload Error', error.message);
+      Alert.alert('Upload Error', error.message || 'Failed to upload file');
     } finally {
       setBtnLoading(false);
     }
@@ -200,7 +205,10 @@ export default function HomeScreen() {
             <Text className="font-poppins-semibold text-gray-900 text-lg">
               Categories
             </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Files')}>
+            <TouchableOpacity onPress={() => {
+              setActiveFilter(undefined);
+              navigation?.navigate('Files');
+            }}>
               <Text className="font-poppins-medium text-brand text-xs">
                 View all files →
               </Text>
@@ -215,7 +223,10 @@ export default function HomeScreen() {
                 <TouchableOpacity
                   key={item.title}
                   activeOpacity={0.7}
-                  onPress={() => navigation.navigate('Files', { initialType: item.type })}
+                  onPress={() => {
+                    setActiveFilter(item.type);
+                    navigation?.navigate('Files');
+                  }}
                   className="w-[48%] bg-white border border-gray-100 rounded-2xl p-4 mb-4 shadow-sm"
                 >
                   <View className="flex-row justify-between items-start mb-3">

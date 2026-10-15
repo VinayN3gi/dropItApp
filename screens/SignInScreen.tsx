@@ -8,11 +8,10 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Input } from 'components/Input';
 import { CustomButton } from 'components/Button';
 import { useNavigation } from '@react-navigation/native';
-import { logIn } from 'appwrite/userAction';
 import { useAuth } from 'context/AuthContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -24,13 +23,7 @@ const SignInScreen = () => {
   const [emailError, setEmailError] = useState<string | undefined>(undefined);
   const [passwordError, setPasswordError] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
-  const { authUser } = useAuth();
-
-  useEffect(() => {
-    if (authUser) {
-      navigation.replace('Tabs');
-    }
-  }, [authUser]);
+  const { login, checkAuth } = useAuth();
 
   const handleClick = async ({ email, password }: { email: string; password: string }) => {
     if (!email.trim()) {
@@ -42,14 +35,16 @@ const SignInScreen = () => {
     } else {
       setLoading(true);
       try {
-        const user = await logIn(email, password);
-        if (user.success) {
-          navigation.navigate('Tabs');
-        } else {
-          throw new Error(user.error);
+        const result = await login(email, password);
+        if (!result.success) {
+          throw new Error(result.error);
         }
       } catch (error: any) {
-        Alert.alert('Sign In Failed', error.message);
+        if (error?.message?.toLowerCase().includes('session is active')) {
+          await checkAuth();
+        } else {
+          Alert.alert('Sign In Failed', error.message || 'Login failed');
+        }
       } finally {
         setEmail('');
         setPassword('');

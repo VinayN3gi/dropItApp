@@ -1,6 +1,7 @@
-import { Client, Account, ID, Databases, Query ,Storage} from 'appwrite';
+import { ID, Query } from 'appwrite';
 import { appwriteConfig } from './config';
 import { constructFileUrl, getFileType, parseStringify } from 'lib/utils';
+import { client, account, databases, storage } from './client';
 
 type AppwriteFile = {
   $createdAt: string;
@@ -16,14 +17,6 @@ type AppwriteFile = {
   sizeOriginal: number;
 };
 
-
-const client = new Client()
-  .setEndpoint(appwriteConfig.endpointUrl!)
-  .setProject(appwriteConfig.projectId!);
-
-const account = new Account(client);
-const databases = new Databases(client);
-const storage=new Storage(client)
 
 interface getFilesProps {
     userId: string | undefined;
@@ -89,12 +82,31 @@ export const getFiles = async ({
             queries
         )
 
-        return parseStringify(files)
+        return parseStringify(files);
+    } catch (error: any) {
+        console.log('getFiles primary query error:', error?.message);
+        try {
+            const types: string[] = [];
+            if (type1) types.push(type1);
+            if (type2) types.push(type2);
 
-        
-    } catch (error) {
-        console.log(error)
-        throw new Error('Failed to fetch file')
+            const fallbackQueries = createQueries(userId || '', email || '', [], searchText, sortText, limit);
+            const fallbackFiles = await databases.listDocuments(
+                appwriteConfig.databaseId!,
+                appwriteConfig.files!,
+                fallbackQueries
+            );
+            if (types.length > 0) {
+                fallbackFiles.documents = fallbackFiles.documents.filter((doc: any) =>
+                    types.includes(doc.type)
+                );
+                fallbackFiles.total = fallbackFiles.documents.length;
+            }
+            return parseStringify(fallbackFiles);
+        } catch (fallbackError) {
+            console.log('getFiles fallback error:', fallbackError);
+            throw new Error('Failed to fetch file');
+        }
     }
 }
 
@@ -227,11 +239,4 @@ export const deleteFile=async({fileId,bucketFileId}:{fileId:string,bucketFileId:
 }
 
 
-export const logOut=async()=>{
-   try {
-    await account.deleteSession('current'); 
-    return true
-  } catch (error:any) {
-    throw new Error(error.message);
-  }
-}
+export { logOut } from './userAction';

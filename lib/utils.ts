@@ -198,7 +198,7 @@ export const getUsageSummary = (totalSpace: any) => {
         totalSpace.video.latestDate > totalSpace.audio.latestDate
           ? totalSpace.video.latestDate
           : totalSpace.audio.latestDate,
-      type:"video",
+      type:"media",
     },
     {
       title: "Others",

@@ -2,8 +2,7 @@ import { View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Loader } from 'components/Loader';
 import { getUser } from 'appwrite/userAction';
-import { logOut } from 'appwrite/fileAction';
-import { useNavigation } from '@react-navigation/native';
+import { useAuth } from 'context/AuthContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -31,7 +30,7 @@ const ProfileScreen = () => {
   const [user, setUser] = useState<User | undefined>(undefined);
   const [refresh, setRefresh] = useState<boolean>(false);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
-  const navigation = useNavigation<any>();
+  const { logout } = useAuth();
 
   useEffect(() => {
     setLoading(true);
@@ -65,15 +64,9 @@ const ProfileScreen = () => {
   const handleLogout = async () => {
     setBtnLoading(true);
     try {
-      const res: any = await logOut();
-      if (res) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'SignIn' }],
-        });
-      }
+      await logout();
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      Alert.alert('Error', error.message || 'Logout failed');
     } finally {
       setBtnLoading(false);
     }

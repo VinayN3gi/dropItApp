@@ -11,11 +11,32 @@ import { FileProvider } from 'context/FileContext';
 import TabNavigator from 'screens/TabNavigator';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import DetailsScreen from 'screens/DetailsScreen';
-import ProfileScreen from 'screens/ProfileScreen';
 
 SplashScreen.preventAutoHideAsync();
 
+import { useAuth } from 'context/AuthContext';
+
 const Stack = createNativeStackNavigator();
+
+function RootNavigator() {
+  const { authUser } = useAuth();
+
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {authUser ? (
+        <Stack.Group>
+          <Stack.Screen name="Tabs" component={TabNavigator} />
+          <Stack.Screen name="Details" component={DetailsScreen} />
+        </Stack.Group>
+      ) : (
+        <Stack.Group>
+          <Stack.Screen name="SignIn" component={SignInScreen} />
+          <Stack.Screen name="SignUp" component={SignUpScreen} />
+        </Stack.Group>
+      )}
+    </Stack.Navigator>
+  );
+}
 
 export default function App() {
   const [loaded, error] = useFonts({
@@ -51,19 +72,15 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <AuthProvider>
-          <FileProvider>
-            <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="Tabs" component={TabNavigator} />
-              <Stack.Screen name="SignIn" component={SignInScreen} />
-              <Stack.Screen name="SignUp" component={SignUpScreen} />
-              <Stack.Screen name="Details" component={DetailsScreen} />
-              <Stack.Screen name="Profile" component={ProfileScreen} />
-            </Stack.Navigator>
-          </FileProvider>
-        </AuthProvider>
-      </NavigationContainer>
+      <AuthProvider>
+        <FileProvider>
+          <NavigationContainer>
+            <RootNavigator />
+          </NavigationContainer>
+        </FileProvider>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }
+
+
