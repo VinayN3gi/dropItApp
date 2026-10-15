@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getUser as fetchUserFromAppwrite } from 'appwrite/userAction';
 import { Text, View } from 'react-native';
 import { Loader } from 'components/Loader';
-import { useNavigation } from '@react-navigation/native';
 
 interface AuthContextType {
   authUser: any;

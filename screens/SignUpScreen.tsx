@@ -1,131 +1,165 @@
-import { View, Text, Image, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import React, { useState } from 'react';
 import { Input } from 'components/Input';
 import { CustomButton } from 'components/Button';
 import { useNavigation } from '@react-navigation/native';
 import { createUser } from 'appwrite/userAction';
-
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SignUpScreen = () => {
-   const navigation = useNavigation<any>();
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [emailError, setEmailError] = useState<string | undefined>(undefined);
-    const [passwordError, setPasswordError] = useState<string | undefined>(undefined);
-    const [userName,setUsername]=useState<string>('')
-    const [usernameError,setUsernameError]=useState<string | undefined>(undefined)
-    const [loading,setLoading]=useState<boolean>(false)
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<any>();
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [emailError, setEmailError] = useState<string | undefined>(undefined);
+  const [passwordError, setPasswordError] = useState<string | undefined>(undefined);
+  const [userName, setUsername] = useState<string>('');
+  const [usernameError, setUsernameError] = useState<string | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(false);
 
-    const handleClick = async ({ email, password,userName }: { email: string; password: string,userName:string }) => {
-       if(!userName.trim())
-        {
-          setUsernameError('Username must be provided')
+  const handleClick = async ({
+    email,
+    password,
+    userName,
+  }: {
+    email: string;
+    password: string;
+    userName: string;
+  }) => {
+    if (!userName.trim()) {
+      setUsernameError('Username must be provided');
+    } else if (!email.trim()) {
+      setEmailError('Email must be provided');
+    } else if (!password.trim()) {
+      setPasswordError('Password must be provided');
+    } else if (password.length < 8) {
+      setPasswordError('Password must have at least 8 characters');
+    } else {
+      setLoading(true);
+      try {
+        const user = await createUser(email, password, userName);
+        if (user.success) {
+          navigation.replace('Tabs');
+        } else {
+          throw new Error(user.error);
         }
-        else if (!email.trim()) {
-          setEmailError('Email must be provided')
-        } else if (!password.trim()) {
-          setPasswordError('Password must be provided')
-        }
-        else if(password.length < 8)
-          {
-            setPasswordError('Password must have 8 characters')
-          } 
-       
-        else {
-          setLoading(true)
-          try {
-              const user=await createUser(email,password,userName)
-              if(user.success)
-              {
-                console.log(user.user)
-                navigation.replace("Tabs")
-              }
-              else throw new Error(user.error)
-          } catch (error:any) {
-            console.log(error.message)
-            Alert.alert('Error',error.message)
-          }
-          finally{
-          setEmail('')
-          setPassword('')
-          setUsername('')
-          setEmailError(undefined)
-          setPasswordError(undefined)
-          setUsernameError(undefined)
-          setLoading(false)
-        }}
-      };
-    
-    
+      } catch (error: any) {
+        Alert.alert('Sign Up Failed', error.message);
+      } finally {
+        setEmail('');
+        setPassword('');
+        setUsername('');
+        setEmailError(undefined);
+        setPasswordError(undefined);
+        setUsernameError(undefined);
+        setLoading(false);
+      }
+    }
+  };
 
-    
   return (
-    <SafeAreaView className="flex flex-1 h-full w-full bg-white">
-         <View className="flex-1 bg-white justify-start mt-20 px-6">
-           {/* Logo */}
-           <Image
-             source={require('../assets/splash-icon.png')}
-             className="w-40 h-40 self-center mb-8"
-             resizeMode="contain"
-           />
-           {/* Inputs */}
-            <Input
-           label='Username'
-           placeholder='Enter your username'
-           value={userName}
-           error={usernameError}
-            onChangeText={(e)=>{
-               setPasswordError(undefined)
-               setEmailError(undefined)
-               setUsernameError(undefined)
-               setUsername(e)
-             }}
-           />
-           <Input
-             label="Email"
-             placeholder="Enter your email"
-             keyboardType="email-address"
-             onChangeText={(e)=>{
-               setPasswordError(undefined)
-               setEmailError(undefined)
-               setUsernameError(undefined)
-               setEmail(e)
-             }}
-             value={email}
-             error={emailError}
-           />
+    <View
+      style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+      className="flex-1 bg-white"
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1"
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 32 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="w-full max-w-md self-center">
+            {/* Logo & Brand Header */}
+            <View className="items-center mb-8">
+              <Image
+                source={require('../assets/splash-icon.png')}
+                className="w-24 h-24 mb-3"
+                resizeMode="contain"
+              />
+              <Text className="text-gray-900 font-poppins-bold text-2xl text-center">
+                Create Account
+              </Text>
+              <Text className="text-gray-400 font-poppins-regular text-sm text-center mt-1">
+                Get started with 2 GB free cloud storage
+              </Text>
+            </View>
 
-          
-           <Input
-             label="Password"
-             placeholder="Enter your password"
-             secureTextEntry={true}
-             onChangeText={(e)=>{
-               setPasswordError(undefined)
-               setEmailError(undefined)
-               setUsernameError(undefined)
-               setPassword(e)
-             }}
-             value={password}
-             error={passwordError}
-           />
-           <CustomButton
-             loading={loading}
-             title="Sign In"
-             className="mt-4"
-             onClick={() => handleClick({ email, password,userName })}
-           />
-           <View className="mt-6 flex-row justify-center">
-             <Text className="text-light-200 font-poppins-medium">
-               Already have an account ?{' '}
-             </Text>
-             <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-               <Text className="text-brand font-poppins-medium">Sign In</Text>
-             </TouchableOpacity>
-           </View>
-         </View>
-       </SafeAreaView>
-  )
-}
+            {/* Inputs */}
+            <View className="space-y-1 mb-2">
+              <Input
+                label="Username"
+                placeholder="Choose a display name"
+                value={userName}
+                error={usernameError}
+                onChangeText={(e) => {
+                  setPasswordError(undefined);
+                  setEmailError(undefined);
+                  setUsernameError(undefined);
+                  setUsername(e);
+                }}
+              />
+              <Input
+                label="Email"
+                placeholder="you@example.com"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onChangeText={(e) => {
+                  setPasswordError(undefined);
+                  setEmailError(undefined);
+                  setUsernameError(undefined);
+                  setEmail(e);
+                }}
+                value={email}
+                error={emailError}
+              />
+              <Input
+                label="Password"
+                placeholder="At least 8 characters"
+                secureTextEntry={true}
+                onChangeText={(e) => {
+                  setPasswordError(undefined);
+                  setEmailError(undefined);
+                  setUsernameError(undefined);
+                  setPassword(e);
+                }}
+                value={password}
+                error={passwordError}
+              />
+            </View>
 
-export default SignUpScreen
+            <CustomButton
+              loading={loading}
+              title="Create Account"
+              className="mt-4 shadow-sm"
+              onClick={() => handleClick({ email, password, userName })}
+            />
+
+            {/* Footer */}
+            <View className="mt-8 flex-row justify-center items-center">
+              <Text className="text-gray-500 font-poppins-medium text-sm">
+                Already have an account?{' '}
+              </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+                <Text className="text-brand font-poppins-bold text-sm">Sign In</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
+  );
+};
+
+export default SignUpScreen;

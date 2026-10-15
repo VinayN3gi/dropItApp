@@ -9,12 +9,13 @@ import SignUpScreen from 'screens/SignUpScreen';
 import { AuthProvider } from 'context/AuthContext';
 import { FileProvider } from 'context/FileContext';
 import TabNavigator from 'screens/TabNavigator';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import DetailsScreen from 'screens/DetailsScreen';
 import ProfileScreen from 'screens/ProfileScreen';
 
 SplashScreen.preventAutoHideAsync();
 
-
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [loaded, error] = useFonts({
@@ -48,21 +49,21 @@ export default function App() {
     return null;
   }
 
-  const Stack = createNativeStackNavigator();
-
   return (
-      <AuthProvider>
-      <FileProvider>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
-           <Stack.Screen name="Tabs" component={TabNavigator} />
-           <Stack.Screen name="SignIn" component={SignInScreen} />
-            <Stack.Screen name="SignUp" component={SignUpScreen} />
-            <Stack.Screen name="Details" component={DetailsScreen}/>
-            <Stack.Screen name="Profile" component={ProfileScreen}/> 
-          </Stack.Navigator>
-        </NavigationContainer>
-      </FileProvider>
-    </AuthProvider>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <AuthProvider>
+          <FileProvider>
+            <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="Tabs" component={TabNavigator} />
+              <Stack.Screen name="SignIn" component={SignInScreen} />
+              <Stack.Screen name="SignUp" component={SignUpScreen} />
+              <Stack.Screen name="Details" component={DetailsScreen} />
+              <Stack.Screen name="Profile" component={ProfileScreen} />
+            </Stack.Navigator>
+          </FileProvider>
+        </AuthProvider>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }

@@ -2,7 +2,8 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import IconComponent from './IconComponent'
 import { convertFileSize, formatDateTime, getFileType } from 'lib/utils'
-import { Models } from 'appwrite'
+import { Ionicons } from '@expo/vector-icons'
+
 type Document = {
   $collectionId?: string;
   $createdAt?: string;
@@ -21,31 +22,42 @@ type Document = {
   users?: string[];
 };
 
-
-const Thumbnail = ({file}:{file:Document}) => {
-    const {type,extension}=getFileType(file.name)
+const Thumbnail = ({ file }: { file: Document }) => {
+  const { type, extension } = getFileType(file.name);
 
   return (
-     <View className="bg-white rounded-2xl p-4 shadow-md mb-6">
-      <View className="flex-row items-center space-x-4">
+    <View className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm mb-3 flex-row items-center justify-between">
+      <View className="flex-row items-center flex-1 mr-3">
         {/* File Icon */}
-        <View className="bg-gray-100 p-3 rounded-xl mr-4">
-          <IconComponent type={type} extension={extension} size={40}/>
+        <View className="w-12 h-12 bg-gray-50 border border-gray-100 rounded-xl items-center justify-center mr-3">
+          <IconComponent type={type} extension={extension} size={30} />
         </View>
 
         {/* File Details */}
         <View className="flex-1">
-          <Text className="text-black font-poppins-medium text-base" numberOfLines={1}>
+          <Text className="text-gray-900 font-poppins-semibold text-sm" numberOfLines={1}>
             {file.name}
           </Text>
-          <View className="flex-row justify-between mt-1">
-            <Text className="text-gray-500 font-poppins-light text-sm">{formatDateTime(file.$createdAt!)}</Text>
-            <Text className="text-gray-500 font-poppins-light text-sm">{convertFileSize(file.size!)}</Text>
+          <View className="flex-row items-center mt-1 space-x-2">
+            <View className="bg-gray-100 px-1.5 py-0.5 rounded mr-2">
+              <Text className="text-gray-600 font-poppins-medium text-[10px] uppercase">
+                {extension || type}
+              </Text>
+            </View>
+            <Text className="text-gray-400 font-poppins-regular text-xs">
+              {convertFileSize(file.size || 0)}
+            </Text>
+            <Text className="text-gray-300 text-xs">•</Text>
+            <Text className="text-gray-400 font-poppins-regular text-xs">
+              {formatDateTime(file.$createdAt)}
+            </Text>
           </View>
         </View>
       </View>
-    </View>
-  )
-}
 
-export default Thumbnail
+      <Ionicons name="chevron-forward" size={18} color="#CBD5E1" />
+    </View>
+  );
+};
+
+export default Thumbnail;
