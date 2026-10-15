@@ -102,7 +102,7 @@ const SignInScreen = () => {
         />
         <View className="mt-6 flex-row justify-center">
           <Text className="text-light-200 font-poppins-medium">
-            Don't have an account ?{' '}
+            {"Don't have an account ? "}
           </Text>
           <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
             <Text className="text-brand font-poppins-medium">Sign Up</Text>
