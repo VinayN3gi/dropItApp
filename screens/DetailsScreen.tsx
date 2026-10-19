@@ -1,10 +1,10 @@
-import { View, Text, TouchableOpacity, Linking, Alert, ScrollView } from 'react-native'
-import { useState } from 'react'
+import { View, Text, TouchableOpacity, Linking, Alert, ScrollView, AppState } from 'react-native'
+import { useState, useEffect, useCallback } from 'react'
 import { constructDownloadUrl, convertFileSize, formatDateTime, getFileType } from 'lib/utils';
 import IconComponent from 'components/IconComponent';
 import { CustomButton } from 'components/Button';
 import { deleteFile } from 'appwrite/fileAction';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useFileContext } from 'context/FileContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -36,21 +36,32 @@ const DetailsScreen = ({ route }: { route: any }) => {
   const navigation = useNavigation<any>();
   const { triggerRefresh } = useFileContext();
 
-  const handleDownload = async (url: string) => {
-    try {
-      setLoading(true);
-      const supported = await Linking.canOpenURL(url);
-      if (supported) {
-        await Linking.openURL(url);
-      } else {
-        Alert.alert("Can't open this URL", url);
-      }
-    } catch (error) {
-      console.error('Failed to open URL:', error);
-      Alert.alert('Error', 'Unable to open the download link.');
-    } finally {
+  // Reset spinners whenever this screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
       setLoading(false);
-    }
+      setDeleteLoading(false);
+    }, [])
+  );
+
+  // When user returns to DropIt from Chrome / Google / background, instantly clear any spinners
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'active') {
+        setLoading(false);
+        setDeleteLoading(false);
+      }
+    });
+    return () => subscription.remove();
+  }, []);
+
+  const handleDownload = (url: string) => {
+    // Immediately clear loading so returning from Google/browser never shows a spinner
+    setLoading(false);
+    Linking.openURL(url).catch((err: any) => {
+      console.error('Failed to open download URL:', err);
+      Alert.alert('Error', 'Unable to open the download link in browser.');
+    });
   };
 
   const confirmDelete = () => {
@@ -73,11 +84,11 @@ const DetailsScreen = ({ route }: { route: any }) => {
     try {
       await deleteFile({ fileId, bucketFileId });
       triggerRefresh();
+      setDeleteLoading(false);
       navigation.goBack();
     } catch (error: any) {
-      console.error(error);
-      Alert.alert('Error', error.message || 'Failed to delete file');
-    } finally {
+      console.error('Delete error:', error);
+      Alert.alert('Error', error?.message || 'Failed to delete file');
       setDeleteLoading(false);
     }
   };

@@ -52,12 +52,10 @@ export default function HomeScreen({ navigation }: { navigation?: any }) {
       }
 
       const file = result.assets[0];
-      const response = await fetch(file.uri);
-      const blob: Blob = await response.blob();
       await uploadToAppwrite({
         uri: file.uri,
         name: file.name,
-        mimeType: blob.type,
+        mimeType: file.mimeType || 'application/octet-stream',
         accountId: user.user.$id,
       });
       triggerRefresh();
